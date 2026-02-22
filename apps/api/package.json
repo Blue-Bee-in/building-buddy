@@ -1,0 +1,8 @@
+{
+    "name": "api",
+    "scripts": {
+        "dev": "air",
+        "build": "go build -o bin/server",
+        "check-types": "staticcheck ./..."
+    }
+}
