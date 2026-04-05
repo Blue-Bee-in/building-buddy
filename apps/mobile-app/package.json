@@ -1,5 +1,5 @@
 {
-  "name": "building-buddy",
+  "name": "mobile-app",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
@@ -10,7 +10,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "check-types": "tsc --noEmit",
-    "build": "eas build --platform android --local"
+    "build": "eas build --platform android --local",
+    "dev": "expo start --ios"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
