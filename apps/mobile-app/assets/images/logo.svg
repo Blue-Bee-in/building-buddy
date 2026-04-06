@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 64" fill="none" role="img" aria-label="Building Buddy">
+  <!-- Icon mark: two towers -->
+  <!-- Left tower (navy, taller) -->
+  <rect x="0" y="4" width="26" height="52" rx="4" fill="#1E3A8A"/>
+  <!-- Right tower (blue, shorter) -->
+  <rect x="30" y="16" width="24" height="40" rx="4" fill="#2563EB"/>
+  <!-- Ground bar -->
+  <rect x="0" y="58" width="54" height="4" rx="2" fill="#1E3A8A"/>
+  <!-- Windows — left tower (2 cols × 3 rows) -->
+  <rect x="4"  y="10" width="7" height="7" rx="1" fill="white" fill-opacity="0.72"/>
+  <rect x="15" y="10" width="7" height="7" rx="1" fill="white" fill-opacity="0.72"/>
+  <rect x="4"  y="22" width="7" height="7" rx="1" fill="white" fill-opacity="0.72"/>
+  <rect x="15" y="22" width="7" height="7" rx="1" fill="white" fill-opacity="0.72"/>
+  <rect x="4"  y="34" width="7" height="7" rx="1" fill="white" fill-opacity="0.72"/>
+  <rect x="15" y="34" width="7" height="7" rx="1" fill="white" fill-opacity="0.72"/>
+  <!-- Windows — right tower (2 cols × 2 rows) -->
+  <rect x="33" y="22" width="7" height="7" rx="1" fill="white" fill-opacity="0.72"/>
+  <rect x="44" y="22" width="7" height="7" rx="1" fill="white" fill-opacity="0.72"/>
+  <rect x="33" y="34" width="7" height="7" rx="1" fill="white" fill-opacity="0.72"/>
+  <rect x="44" y="34" width="7" height="7" rx="1" fill="white" fill-opacity="0.72"/>
+
+  <!-- Wordmark -->
+  <text x="68" y="43" font-family="Inter, system-ui, sans-serif" font-size="32" font-weight="400" fill="#1E3A8A" letter-spacing="-0.5">building</text>
+  <text x="186" y="43" font-family="Inter, system-ui, sans-serif" font-size="32" font-weight="700" fill="#2563EB" letter-spacing="-0.5">buddy</text>
+</svg>
