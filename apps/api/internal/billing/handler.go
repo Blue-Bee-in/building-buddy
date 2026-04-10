@@ -4,19 +4,20 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	apimw "github.com/Blue-Bee-in/building-buddy/internal/middleware"
 )
 
-func Router() http.Handler {
+func Router(db *pgxpool.Pool) http.Handler {
 	r := chi.NewRouter()
-	r.Use(apimw.Auth)
+	r.Use(apimw.Auth(db))
 
-	r.With(apimw.RequireRole("resident")).Get("/invoices", handleListInvoices)
-	r.With(apimw.RequireRole("resident")).Get("/invoices/{invoiceID}", handleGetInvoice)
+	r.With(apimw.RequireRoles("resident", "owner")).Get("/invoices", handleListInvoices)
+	r.With(apimw.RequireRoles("resident", "owner")).Get("/invoices/{invoiceID}", handleGetInvoice)
 
-	r.With(apimw.RequireRole("society_admin", "committee_member")).Get("/invoices/all", handleListAllInvoices)
-	r.With(apimw.RequireRole("society_admin")).Post("/invoices/{invoiceID}/manual-payment", handleManualPayment)
-	r.With(apimw.RequireRole("society_admin")).Get("/invoices/export", handleExport)
+	r.With(apimw.RequireAdmin).Get("/invoices/all", handleListAllInvoices)
+	r.With(apimw.RequireAdmin).Post("/invoices/{invoiceID}/manual-payment", handleManualPayment)
+	r.With(apimw.RequireAdmin).Get("/invoices/export", handleExport)
 
 	r.Post("/webhooks/razorpay", handleRazorpayWebhook)
 

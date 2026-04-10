@@ -4,26 +4,27 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	apimw "github.com/Blue-Bee-in/building-buddy/internal/middleware"
 )
 
-func Router() http.Handler {
+func Router(db *pgxpool.Pool) http.Handler {
 	r := chi.NewRouter()
-	r.Use(apimw.Auth)
+	r.Use(apimw.Auth(db))
 
 	// Resident: create/list passes
-	r.With(apimw.RequireRole("resident")).Post("/passes", handleCreatePass)
-	r.With(apimw.RequireRole("resident")).Get("/passes", handleListPasses)
-	r.With(apimw.RequireRole("resident")).Delete("/passes/{passID}", handleRevokePass)
+	r.With(apimw.RequireRoles("resident", "owner")).Post("/passes", handleCreatePass)
+	r.With(apimw.RequireRoles("resident", "owner")).Get("/passes", handleListPasses)
+	r.With(apimw.RequireRoles("resident", "owner")).Delete("/passes/{passID}", handleRevokePass)
 
 	// Delivery passes
-	r.With(apimw.RequireRole("resident")).Post("/deliveries", handleCreateDelivery)
+	r.With(apimw.RequireRoles("resident", "owner")).Post("/deliveries", handleCreateDelivery)
 
 	// Guard: validate & log entry/exit
-	r.With(apimw.RequireRole("security_guard")).Post("/validate", handleValidatePass)
-	r.With(apimw.RequireRole("security_guard")).Post("/entries", handleLogEntry)
-	r.With(apimw.RequireRole("security_guard")).Patch("/entries/{entryID}/exit", handleLogExit)
-	r.With(apimw.RequireRole("security_guard")).Get("/entries", handleListEntries)
+	r.With(apimw.RequireGuard).Post("/validate", handleValidatePass)
+	r.With(apimw.RequireGuard).Post("/entries", handleLogEntry)
+	r.With(apimw.RequireGuard).Patch("/entries/{entryID}/exit", handleLogExit)
+	r.With(apimw.RequireGuard).Get("/entries", handleListEntries)
 
 	return r
 }

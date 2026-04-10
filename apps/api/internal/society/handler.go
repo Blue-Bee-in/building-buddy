@@ -4,17 +4,18 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	apimw "github.com/Blue-Bee-in/building-buddy/internal/middleware"
 )
 
-func Router() http.Handler {
+func Router(db *pgxpool.Pool) http.Handler {
 	r := chi.NewRouter()
-	r.Use(apimw.Auth)
+	r.Use(apimw.Auth(db))
 
-	r.With(apimw.RequireRole("super_admin")).Post("/", handleCreate)
-	r.With(apimw.RequireRole("super_admin", "society_admin")).Get("/{societyID}", handleGet)
-	r.With(apimw.RequireRole("society_admin")).Put("/{societyID}/bank-details", handleUpdateBankDetails)
-	r.With(apimw.RequireRole("society_admin")).Post("/{societyID}/charge-heads", handleCreateChargeHead)
+	r.With(apimw.RequireAdmin).Post("/", handleCreate)
+	r.With(apimw.RequireAdmin).Get("/{societyID}", handleGet)
+	r.With(apimw.RequireAdmin).Put("/{societyID}/bank-details", handleUpdateBankDetails)
+	r.With(apimw.RequireAdmin).Post("/{societyID}/charge-heads", handleCreateChargeHead)
 	return r
 }
 

@@ -1,10 +1,10 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code (claude.ai/code) working in this repo.
 
 ## Monorepo Structure
 
-This is a **pnpm + Turborepo** monorepo with three apps and three shared packages:
+**pnpm + Turborepo** monorepo. Three apps, three shared packages:
 
 - `apps/api` — Go REST API (`chi` router, `pgx` for Postgres, `goose` migrations, `bob` ORM, `air` for hot-reload)
 - `apps/web` — Next.js 16 admin frontend (React 19, TypeScript, uses `@repo/ui`)
@@ -56,29 +56,29 @@ cd packages/ui && pnpm generate:component
 
 ## Application Flows
 
-For a complete reference of all major user journeys (society onboarding, resident onboarding, billing, visitor management, delivery, domestic help, complaints, and emergency SOS), refer to [`docs/flow.md`](./docs/flow.md).
+All major user journeys (society onboarding, resident onboarding, billing, visitor management, delivery, domestic help, complaints, emergency SOS): [`docs/flow.md`](./docs/flow.md).
 
 ## Architecture Notes
 
 ### API
-- Entry point: `apps/api/cmd/server/main.go`
-- Uses `chi` for HTTP routing with CORS via `go-chi/cors`
-- Database: PostgreSQL via `pgx/v5`; migrations managed by `goose`; query builder is `bob`
-- The `air` tool watches for file changes in dev (config likely at `apps/api/.air.toml`)
+- Entry: `apps/api/cmd/server/main.go`
+- `chi` HTTP routing, CORS via `go-chi/cors`
+- DB: PostgreSQL via `pgx/v5`; migrations: `goose`; query builder: `bob`
+- `air` watches file changes in dev (config: `apps/api/.air.toml`)
 
 ### Web (admin)
-- Package name is `admin` internally
-- Next.js App Router; pages live in `apps/web/app/`
-- Runs on port 3000 in dev
-- `next typegen` must run before `tsc` (it's part of the `check-types` script)
+- Package name: `admin` internally
+- Next.js App Router; pages in `apps/web/app/`
+- Port 3000 in dev
+- `next typegen` must run before `tsc` (part of `check-types` script)
 
 ### Mobile
-- File-based routing via `expo-router`; route files are in `apps/mobile-app/app/`
-- Tab navigation defined under `app/(tabs)/`
+- File-based routing via `expo-router`; routes in `apps/mobile-app/app/`
+- Tab nav under `app/(tabs)/`
 - Uses `react-native-reanimated` and `react-native-gesture-handler`
-- `@/` path alias maps to the project root
+- `@/` alias maps to project root
 
 ### Shared UI (`@repo/ui`)
 - Components exported as `@repo/ui/<name>` (e.g. `@repo/ui/button`)
-- Each component is a single `.tsx` file under `packages/ui/src/`
-- Only consumed by Next.js apps (not the mobile app)
+- Each component: single `.tsx` file under `packages/ui/src/`
+- Next.js apps only (not mobile)
