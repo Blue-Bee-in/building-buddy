@@ -11,7 +11,7 @@
     "lint": "expo lint",
     "check-types": "tsc --noEmit",
     "build": "eas build --platform android --local",
-    "dev": "expo start --ios"
+    "dev": "expo start --ios  --port=8081"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

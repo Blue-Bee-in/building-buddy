@@ -9,7 +9,7 @@
     "lint": "expo lint",
     "check-types": "tsc --noEmit",
     "build": "eas build --platform android --local",
-    "dev": "expo start --android"
+    "dev": "expo start --android --port=8082"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
