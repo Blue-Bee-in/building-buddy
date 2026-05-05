@@ -63,7 +63,7 @@ All major user journeys (society onboarding, resident onboarding, billing, visit
 ### API
 - Entry: `apps/api/cmd/server/main.go`
 - `chi` HTTP routing, CORS via `go-chi/cors`
-- DB: PostgreSQL via `pgx/v5`; migrations: `goose`; query builder: `bob`
+- DB: PostgreSQL via `pgx/v5`; migrations: `goose`; queries: raw pgx (no ORM)
 - `air` watches file changes in dev (config: `apps/api/.air.toml`)
 
 ### Web (admin)
@@ -114,6 +114,7 @@ The skill has specialized workflows that produce better results than ad-hoc answ
 
 Key routing rules:
 - Product ideas, "is this worth building", brainstorming → invoke office-hours
+- Design system updates, visual changes → read DESIGN.md first, always
 - Bugs, errors, "why is this broken", 500 errors → invoke investigate
 - Ship, deploy, push, create PR → invoke ship
 - QA, test the site, find bugs → invoke qa
@@ -125,3 +126,19 @@ Key routing rules:
 - Architecture review → invoke plan-eng-review
 - Save progress, checkpoint, resume → invoke checkpoint
 - Code quality, health check → invoke health
+
+## Design System
+Always read `DESIGN.md` before making any visual or UI decisions.
+Font choices, colors, spacing, border-radius, and motion are all defined there.
+Do not deviate without explicit user approval.
+In QA mode: flag any code that uses fonts, colors, or spacing values not in DESIGN.md.
+
+Key decisions in DESIGN.md:
+- **Fonts:** Fraunces (display/documents), Plus Jakarta Sans (UI/body), JetBrains Mono (IDs/timestamps)
+- **Accent:** `#1B6F68` forest teal — not blue, not purple
+- **Surface:** `#F5F4F0` warm off-white for document areas
+- **Primary/Text:** `#1E2A3A` slate-navy
+- **Mobile styling:** NativeWind (Tailwind for RN)
+- **Web components:** shadcn/ui
+- **Currency:** Indian lakh format — ₹1,25,000 not ₹125,000
+- **PDF fonts:** Must embed Unicode TTFs (Fraunces + Noto Sans Devanagari fallback) for regional script support

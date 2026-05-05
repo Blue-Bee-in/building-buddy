@@ -10,9 +10,19 @@ import (
 	chimw "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 
+	"github.com/riverqueue/river"
+	"github.com/riverqueue/river/riverdriver/riverpgxv5"
+
 	"github.com/Blue-Bee-in/building-buddy/internal/auth"
+	"github.com/Blue-Bee-in/building-buddy/internal/billing"
 	"github.com/Blue-Bee-in/building-buddy/internal/db"
-	apimw "github.com/Blue-Bee-in/building-buddy/internal/middleware"
+	"github.com/Blue-Bee-in/building-buddy/internal/device"
+	"github.com/Blue-Bee-in/building-buddy/internal/maintenance"
+	"github.com/Blue-Bee-in/building-buddy/internal/notices"
+	"github.com/Blue-Bee-in/building-buddy/internal/resident"
+	"github.com/Blue-Bee-in/building-buddy/internal/society"
+	"github.com/Blue-Bee-in/building-buddy/internal/storage"
+	"github.com/Blue-Bee-in/building-buddy/internal/visitor"
 )
 
 func main() {
@@ -25,6 +35,13 @@ func main() {
 	}
 	defer pool.Close()
 
+	// E5: init object storage (DO Spaces). Falls back to nil → local disk in dev.
+	sc, err := storage.NewFromEnv()
+	if err != nil {
+		slog.Warn("object storage unavailable, PDFs will use local disk", "err", err)
+		sc = nil
+	}
+
 	r := chi.NewRouter()
 
 	r.Use(chimw.Logger)
@@ -33,7 +50,7 @@ func main() {
 		AllowedOrigins:   []string{"http://localhost:3000"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-Society-ID", "X-Flat-ID", "X-Device-Type", "X-App"},
-		ExposedHeaders:   []string{"X-Auth-Token"}, // AuthBoss writes the session JWT here
+		ExposedHeaders:   []string{"X-Auth-Token"},
 		AllowCredentials: true,
 	}))
 
@@ -50,16 +67,21 @@ func main() {
 	}
 	r.Mount("/api/v1/auth", authHandler)
 
-	// Feature routes — all require a valid JWT via the Auth middleware
-	r.Group(func(r chi.Router) {
-		r.Use(apimw.Auth(pool))
+	// River client for enqueueing background jobs from HTTP handlers.
+	riverClient, err := river.NewClient(riverpgxv5.New(pool), &river.Config{})
+	if err != nil {
+		slog.Error("river client init failed", "err", err)
+		os.Exit(1)
+	}
 
-		// TODO: mount feature routers
-		// r.Mount("/api/v1/societies", society.NewHandler(pool).Router())
-		// r.Mount("/api/v1/residents", resident.NewHandler(pool).Router())
-		// r.Mount("/api/v1/billing",   billing.NewHandler(pool).Router())
-		// r.Mount("/api/v1/visitors",  visitor.NewHandler(pool).Router())
-	})
+	// Feature routes
+	r.Mount("/api/v1/societies", society.Router(pool))
+	r.Mount("/api/v1/residents", resident.Router(pool))
+	r.Mount("/api/v1/billing", billing.Router(pool))
+	r.Mount("/api/v1/visitors", visitor.Router(pool))
+	r.Mount("/api/v1/maintenance-requests", maintenance.Router(pool, riverClient, sc))
+	r.Mount("/api/v1/notices", notices.Router(pool, riverClient))
+	r.Mount("/api/v1/devices", device.Router(pool))
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -72,4 +94,3 @@ func main() {
 		os.Exit(1)
 	}
 }
-

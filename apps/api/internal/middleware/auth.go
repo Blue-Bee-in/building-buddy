@@ -106,6 +106,12 @@ func FromCtx(r *http.Request) *RequestContext {
 	return rc
 }
 
+// WithRequestContext returns a copy of ctx with rc injected.
+// Intended for tests that bypass JWT validation.
+func WithRequestContext(ctx context.Context, rc *RequestContext) context.Context {
+	return context.WithValue(ctx, RequestCtxKey, rc)
+}
+
 // RequireRoles returns 403 if the authenticated user holds none of the
 // specified flat-level roles (e.g. "owner", "resident").
 func RequireRoles(roles ...string) func(http.Handler) http.Handler {
